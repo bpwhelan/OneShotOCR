@@ -42,13 +42,13 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path dist -Force | Out-Null
-          Copy-Item target\release\oneshot-ocr.exe dist\OneShot-OCR-Windows-x64.exe
+          Copy-Item target\release\oneshot-ocr.exe dist\OneShotOCR.exe
 
       - name: Upload executable
         uses: actions/upload-artifact@v7
         with:
-          name: OneShot-OCR-Windows-x64
-          path: dist/OneShot-OCR-Windows-x64.exe
+          name: OneShotOCR
+          path: dist/OneShotOCR.exe
           if-no-files-found: error
 
   release:
@@ -64,7 +64,7 @@ jobs:
       - name: Download executable
         uses: actions/download-artifact@v5
         with:
-          name: OneShot-OCR-Windows-x64
+          name: OneShotOCR
           path: release
 
       - name: Create or update GitHub release
@@ -74,7 +74,7 @@ jobs:
           RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" release/OneShot-OCR-Windows-x64.exe --clobber
+            gh release upload "$RELEASE_TAG" release/OneShotOCR.exe --clobber
           else
-            gh release create "$RELEASE_TAG" release/OneShot-OCR-Windows-x64.exe --verify-tag --generate-notes --title "$RELEASE_TAG"
+            gh release create "$RELEASE_TAG" release/OneShotOCR.exe --verify-tag --generate-notes --title "$RELEASE_TAG"
           fi
