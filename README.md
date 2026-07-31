@@ -15,8 +15,8 @@ OneShot OCR is a tiny standalone **background tray utility** for one-off text
 capture: press a global hotkey → drag-select a screen area → OCR it → the text
 lands on your clipboard. That's it—there are no plans for extra functionality.
 
-It supports Google Lens plus local OneOCR and ScreenAI runtimes. The local
-engines are called directly through their native DLL APIs; no OCR web server or
+It supports Google Lens by default, with optional local OneOCR and ScreenAI
+runtimes. The local engines are called directly through their native DLL APIs; no OCR web server or
 Python process is required.
 
 OCR results are language-agnostic and work with any language supported by the
@@ -39,7 +39,8 @@ Cancel a capture with **Esc** or a **right-click**.
 
 ### Tray menu
 
-- **OCR Engine** - Select between Google Lens, OneOCR, and ScreenAI
+- **OCR Engine** - Select Google Lens, plus OneOCR and/or ScreenAI when their
+  corresponding build features are enabled
 - **Capture (OCR area)** — start a capture immediately.
 - **Set Hotkey...** — opens a small window; press the key combination you want.
   Supports modifiers (Ctrl/Shift/Alt/Win) and **F1-F24, including F13-F24**.
@@ -64,6 +65,19 @@ Existing settings in `%APPDATA%\lens_adhoc\config.txt` are used until you save
 a setting, which writes them to the new OneShot OCR location.
 
 ### Local OCR runtimes
+
+The default build contains only Google Lens. To include a local engine, build
+with its explicit Cargo feature:
+
+```powershell
+cargo build --release --features oneocr
+cargo build --release --features screenai
+cargo build --release --features oneocr,screenai
+```
+
+The tray menu only shows engines included in the current build. If an existing
+config selects an engine that is not compiled in, OneShot OCR falls back to
+Google Lens.
 
 On Windows, OneOCR is loaded from `%USERPROFILE%\.config\oneocr` and expects
 `oneocr.dll`, `oneocr.onemodel`, and `onnxruntime.dll`. ScreenAI is loaded from

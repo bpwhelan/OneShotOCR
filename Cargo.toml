@@ -1,14 +1,21 @@
 [package]
 name = "oneshot-ocr"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
+
+[features]
+# Keep local OCR integrations out of the default binary. Enable either one with
+# `--features oneocr` or `--features screenai` (or both).
+default = []
+oneocr = ["dep:libloading"]
+screenai = ["dep:libloading"]
 
 [dependencies]
 anyhow = "1.0.104"
 arboard = "3.6.1"
 global-hotkey = "0.8.0"
 image = { version = "0.25.10", default-features = false, features = ["png"] }
-libloading = "0.8"
+libloading = { version = "0.8", optional = true }
 prost = "0.14.4"
 rand = "0.10.2"
 reqwest = { version = "0.13.4", default-features = false, features = ["blocking", "http2", "charset", "native-tls", "gzip", "brotli", "deflate", "zstd"] }

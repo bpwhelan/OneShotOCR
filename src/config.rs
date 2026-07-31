@@ -15,7 +15,9 @@ const LEGACY_CONFIG_DIRECTORY: &str = "lens_adhoc";
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OcrEngine {
     GoogleLens,
+    #[cfg(feature = "oneocr")]
     OneOcr,
+    #[cfg(feature = "screenai")]
     ScreenAi,
 }
 
@@ -23,7 +25,9 @@ impl OcrEngine {
     pub const fn config_name(self) -> &'static str {
         match self {
             Self::GoogleLens => "google_lens",
+            #[cfg(feature = "oneocr")]
             Self::OneOcr => "oneocr",
+            #[cfg(feature = "screenai")]
             Self::ScreenAi => "screenai",
         }
     }
@@ -31,7 +35,9 @@ impl OcrEngine {
     pub const fn display_name(self) -> &'static str {
         match self {
             Self::GoogleLens => "Google Lens",
+            #[cfg(feature = "oneocr")]
             Self::OneOcr => "OneOCR",
+            #[cfg(feature = "screenai")]
             Self::ScreenAi => "ScreenAI",
         }
     }
@@ -39,7 +45,9 @@ impl OcrEngine {
     pub fn from_config_name(value: &str) -> Option<Self> {
         match value.trim().to_ascii_lowercase().as_str() {
             "google_lens" | "lens" | "glens" => Some(Self::GoogleLens),
+            #[cfg(feature = "oneocr")]
             "oneocr" => Some(Self::OneOcr),
+            #[cfg(feature = "screenai")]
             "screenai" | "screen_ai" => Some(Self::ScreenAi),
             _ => None,
         }

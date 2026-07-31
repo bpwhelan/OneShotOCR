@@ -44,7 +44,9 @@ struct TrayHandles {
     _ocr_submenu: Submenu,
     capture_item: MenuItem,
     google_lens_item: CheckMenuItem,
+    #[cfg(feature = "oneocr")]
     oneocr_item: CheckMenuItem,
+    #[cfg(feature = "screenai")]
     screenai_item: CheckMenuItem,
     set_hotkey_item: MenuItem,
     quit_item: MenuItem,
@@ -120,12 +122,14 @@ impl App {
             self.config.engine == OcrEngine::GoogleLens,
             None,
         );
+        #[cfg(feature = "oneocr")]
         let oneocr_item = CheckMenuItem::new(
             "OneOCR",
             true,
             self.config.engine == OcrEngine::OneOcr,
             None,
         );
+        #[cfg(feature = "screenai")]
         let screenai_item = CheckMenuItem::new(
             "ScreenAI",
             true,
@@ -134,7 +138,9 @@ impl App {
         );
         let ocr_submenu = Submenu::new("OCR engine", true);
         ocr_submenu.append(&google_lens_item)?;
+        #[cfg(feature = "oneocr")]
         ocr_submenu.append(&oneocr_item)?;
+        #[cfg(feature = "screenai")]
         ocr_submenu.append(&screenai_item)?;
         let set_hotkey_item = MenuItem::new("Set Hotkey...", true, None);
         let quit_item = MenuItem::new("Quit", true, None);
@@ -161,7 +167,9 @@ impl App {
             _ocr_submenu: ocr_submenu,
             capture_item,
             google_lens_item,
+            #[cfg(feature = "oneocr")]
             oneocr_item,
+            #[cfg(feature = "screenai")]
             screenai_item,
             set_hotkey_item,
             quit_item,
@@ -257,11 +265,19 @@ impl App {
         };
         if id == *tray.google_lens_item.id() {
             self.select_engine(OcrEngine::GoogleLens);
-        } else if id == *tray.oneocr_item.id() {
+            return;
+        }
+        #[cfg(feature = "oneocr")]
+        if id == *tray.oneocr_item.id() {
             self.select_engine(OcrEngine::OneOcr);
-        } else if id == *tray.screenai_item.id() {
+            return;
+        }
+        #[cfg(feature = "screenai")]
+        if id == *tray.screenai_item.id() {
             self.select_engine(OcrEngine::ScreenAi);
-        } else if id == *tray.capture_item.id() {
+            return;
+        }
+        if id == *tray.capture_item.id() {
             self.start_capture(event_loop);
         } else if id == *tray.set_hotkey_item.id() {
             self.start_set_hotkey(event_loop);
@@ -278,7 +294,9 @@ impl App {
         if let Some(tray) = &self.tray {
             tray.google_lens_item
                 .set_checked(engine == OcrEngine::GoogleLens);
+            #[cfg(feature = "oneocr")]
             tray.oneocr_item.set_checked(engine == OcrEngine::OneOcr);
+            #[cfg(feature = "screenai")]
             tray.screenai_item
                 .set_checked(engine == OcrEngine::ScreenAi);
             let _ = tray._tray.set_tooltip(Some(self.tooltip()));
