@@ -22,10 +22,6 @@ jobs:
   build-windows:
     name: Windows x64
     runs-on: windows-latest
-    permissions:
-      actions: read
-      contents: read
-      id-token: write
 
     steps:
       - name: Check out repository
@@ -47,40 +43,6 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path dist -Force | Out-Null
           Copy-Item target\release\oneshot-ocr.exe dist\OneShot-OCR-Windows-x64.exe
-
-      - name: Upload unsigned executable for signing
-        id: upload-unsigned
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v7
-        with:
-          name: OneShot-OCR-Windows-x64-unsigned
-          path: dist/OneShot-OCR-Windows-x64.exe
-          if-no-files-found: error
-
-      - name: Submit signing request
-        if: github.event_name != 'pull_request'
-        continue-on-error: true
-        uses: signpath/github-action-submit-signing-request@b9d91eadd323de506c0c81cf0c7fe7438f3360fd
-        with:
-          api-token: ${{ secrets.SIGNPATH_APITOKEN }}
-          organization-id: c677c167-9f3e-4577-b967-5d7730bf742d
-          project-slug: GameSentenceMiner
-          artifact-configuration-slug: OneShot_OCR
-          signing-policy-slug: release-signing
-          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
-          wait-for-completion: true
-          output-artifact-directory: signed_output
-
-      - name: Use signed executable when available
-        if: github.event_name != 'pull_request'
-        shell: pwsh
-        run: |
-          $signed = Get-ChildItem -Path signed_output -Recurse -File -Filter OneShot-OCR-Windows-x64.exe -ErrorAction SilentlyContinue | Select-Object -First 1
-          if ($signed) {
-            Copy-Item $signed.FullName dist\OneShot-OCR-Windows-x64.exe -Force
-          } else {
-            Write-Warning "Signed executable not available; using unsigned executable."
-          }
 
       - name: Upload executable
         uses: actions/upload-artifact@v7
