@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: Existing v* tag to rebuild and publish (leave blank for build only)
+        description: v* tag to create or update (leave blank for build only)
         required: false
         type: string
 
@@ -27,7 +27,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref }}
+          # A manually entered release tag may not exist yet.  Build the commit
+          # selected when dispatching the workflow, then create that tag below.
+          ref: ${{ github.ref }}
 
       - name: Install stable Rust
         uses: dtolnay/rust-toolchain@stable
@@ -76,5 +78,5 @@ jobs:
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" release/OneShotOCR.exe --clobber
           else
-            gh release create "$RELEASE_TAG" release/OneShotOCR.exe --verify-tag --generate-notes --title "$RELEASE_TAG"
+            gh release create "$RELEASE_TAG" release/OneShotOCR.exe --target "$GITHUB_SHA" --generate-notes --title "$RELEASE_TAG"
           fi
