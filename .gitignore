@@ -1,0 +1,28 @@
+# Rust build output
+/target/
+/dist/
+**/*.rs.bk
+
+# Local editor state
+/.history/
+/.idea/
+/.vscode/
+/.vs/
+*.swp
+*.swo
+*~
+
+# Local environment and logs
+.env
+.env.*
+!.env.example
+*.log
+*.tmp
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# The README uses the converted animated AVIF.
+/.github/files/oneshot_demo.mp4
